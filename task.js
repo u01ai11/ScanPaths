@@ -42,15 +42,15 @@ ctx.canvas.height = window.innerHeight;
 	//These variables contain 5 points that will act as our calibration. Each is 5% from the edge of the window, except the center one. 
 	// 0 = top left; 1= top right; 2= bottom left; 3=center, 4=bottom right
 	var defCoordsX = [0.05*canvas.width, 0.95*canvas.width, 0.05*canvas.width, 0.5*canvas.width, 0.95*canvas.width];
-	var defCoordsY = [0.05*canvas.height, 0.05*canvas.height, 0.95*canvas.height, 0.5*canvas.height, 0.95*canvas.height];
+	var defCoordsY = [0.05*canvas.height, 0.05*canvas.height, 0.90*canvas.height, 0.5*canvas.height, 0.90*canvas.height];
 	
 	//pick the order of points 
 	var calx = [defCoordsX[1], defCoordsX[3], defCoordsX[2], defCoordsX[0], defCoordsX[4]]
 	var caly = [defCoordsY[1], defCoordsY[3], defCoordsY[2], defCoordsY[0], defCoordsY[4]]
 
 	//we choose different locations for the calibration 
-	var calx = [defCoordsX[0], defCoordsX[4], defCoordsX[1], defCoordsX[3], defCoordsX[2]]
-	var caly = [defCoordsY[0], defCoordsY[4], defCoordsY[1], defCoordsY[3], defCoordsY[2]]
+	var valx = [defCoordsX[0], defCoordsX[4], defCoordsX[1], defCoordsX[3], defCoordsX[2]]
+	var valy = [defCoordsY[0], defCoordsY[4], defCoordsY[1], defCoordsY[3], defCoordsY[2]]
 
 	//call the game conig function, which returns a nice sorted object 
 	var game_info = new game_config();
@@ -97,7 +97,11 @@ function runScript() {
 
 	//This shows the calibration points to get WebGazer accurate 
 	function showCalibration(){
-		console.log('calibrating')
+		ctx.font = 0.04*canvas.height +'pt Arial';
+	    ctx.textAlign="center";
+	    ctx.fillStyle ='white';
+	    ctx.fillText("Calibration",0.5*canvas.width, 0.2*canvas.height);
+
 		ctx.fillStyle = 'grey';
     	ctx.fillRect(0, 0, canvas.width, canvas.height);
 	    //Get the current square location
@@ -115,11 +119,41 @@ function runScript() {
 	}
 
 	function showValidation(){
+		ctx.fillStyle = 'grey';
+    	ctx.fillRect(0, 0, canvas.width, canvas.height);
+	    //Get the current target location
+	    locx = valx[valCnt];
+	    locy = valy[valCnt];
+	    // Render circle to follow 
+	    Sz = 0.015 //size in percent of window
+	    ctx.beginPath();
+		ctx.arc(locx+Sz*canvas.width,locy+Sz*canvas.width,Sz*canvas.width, 0, 2*Math.PI);
+		ctx.strokeStyle = 'white'; 
+		ctx.stroke();
+		ctx.fillStyle = 'white';
+		ctx.fill();
 
 	}
 
 	function showDegrees(){
+		ctx.fillStyle = 'grey';
+    	ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+    	//draw all targets - using function
+    	//define function
+    	function drawCirc(x,y,Sz){
+	    	ctx.beginPath();
+			ctx.arc(x+Sz*canvas.width,y+Sz*canvas.width,Sz*canvas.width, 0, 2*Math.PI);
+			ctx.strokeStyle = 'white'; 
+			ctx.stroke();
+			ctx.fillStyle = 'white';
+			ctx.fill();
+    	}
+    	//loop through locations
+    	for(var i=0; i< 5; i++) {
+	        drawCirc(defCoordsX[i], defCoordsY[i], 0.015)
+
+	    }
 	}
 
 	//This shows the image 
@@ -179,14 +213,15 @@ flagInstructions == true
 
 
 		//if instructions were not showing, and calibration points are less than 5, increase the point count 	
-		} else if (flagCalibrate == true && calCnt > 4) {
+		} else if (flagCalibrate == true && calCnt < 4) {
 			calCnt = calCnt + 1; 
+			console.log(calCnt)
 		//if points were more than 5 flag validation stage 
 		} else if (flagCalibrate == true){
 			flagCalibrate = false;
 			flagValidate = true;
 		//if validation is not complete, increase count 
-		} else if (flagValidate == true && valCnt > 4) {
+		} else if (flagValidate == true && valCnt < 4) {
 			valCnt = valCnt + 1;
 		//if validation is complete, flag degrees deviation screen
 		} else if (flagValidate == true) {
@@ -201,7 +236,7 @@ flagInstructions == true
 			flagTrial = false
 			flagRender = true
 		//if render has finished being viewed, but less than 5 trials, flag trial stage again and increase counter
-		} else if (flagRender == true && trialIdx > 4){
+		} else if (flagRender == true && trialIdx < 4){
 			flagRender = false
 			flagTrial = true 
 			trialIdx = trialIdx + 1
