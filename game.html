@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>ScanPaths</title>
+    <style>
+    	* { padding: 0; margin: 0; }
+    	canvas { background: #eee; display: block; margin: 0 auto; }
+    </style>
+</head>
+<body>
+
+<!-- Make Canvas -->
+<canvas id="myCanvas" width="80%" height="90%"></canvas>
+
+<!-- Load in JS files -->
+<script type="text/javascript" src="run/src/jquery.js"></script>
+<script type= "text/javascript" src="task.js"></script>
+
+<!-- Script to run -->
+<script>
+
+	//Set up the file reader 
+    var jsCode;
+    function readSingleFile(e) {
+        var file = e.target.files[0];
+        if (!file) {
+            return;
+        }
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var contents = e.target.result;
+            jsCode = contents;
+        };
+        reader.readAsText(file);
+    };
+
+
+	//Set up prefix 
+	var pathPrefix; 
+	//Run the JavaScript Task
+	runScript();
+</script>
+
+</body>
+</html>
