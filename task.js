@@ -48,14 +48,37 @@ ctx.canvas.height = window.innerHeight;
 	var calx = [defCoordsX[1], defCoordsX[3], defCoordsX[2], defCoordsX[0], defCoordsX[4]]
 	var caly = [defCoordsY[1], defCoordsY[3], defCoordsY[2], defCoordsY[0], defCoordsY[4]]
 
+	//Index location reference for storing Gaze info 
+	var calIndex = [1, 3, 2, 0, 4]
+
 	//we choose different locations for the calibration 
 	var valx = [defCoordsX[0], defCoordsX[4], defCoordsX[1], defCoordsX[3], defCoordsX[2]]
 	var valy = [defCoordsY[0], defCoordsY[4], defCoordsY[1], defCoordsY[3], defCoordsY[2]]
+
+	//Index location reference for storing Gaze info 
+	var valIndex = [0, 4, 1, 3, 2]
 
 	//call the game conig function, which returns a nice sorted object 
 	var game_info = new game_config();
 	var nlen = game_info.trials.length;
 
+// Set up Variables to record eye location data 
+
+    //all Calibration X Y predictions
+	var CalDataX = []; 
+	var CalDataY = []; 
+
+	//last 10 predictions for each point 
+	var CalLastX = [];
+	var CalLastY = [];
+
+    //all Validation X Y predictions
+	var ValData = []; 
+	var ValDataX = []; 
+	var ValDataY = []; 
+	//last 10 predictions for each point 
+	var ValLastX = [];
+	var ValLastY = [];
 
 //Important function which actually plays the game! 
 
@@ -109,7 +132,6 @@ function runScript() {
 	    //Get the current square location
 	    locx = calx[calCnt];
 	    locy = caly[calCnt];
-	    console.log(locx, locy);
 	    // Render circle to follow 
 	    Sz = 0.015 //size in percent of window
 	    ctx.beginPath();
@@ -118,6 +140,12 @@ function runScript() {
 		ctx.stroke();
 		ctx.fillStyle = 'white';
 		ctx.fill();
+
+		//This adds WebGazer's current location predictions to the CalData X/Y array
+		
+		CalDataX.push(window.dataX);
+		CalDataY.push(window.dataY);
+
 	}
 
 	function showValidation(){
@@ -142,6 +170,10 @@ function runScript() {
 		ctx.fillStyle = 'white';
 		ctx.fill();
 
+		//This adds WebGazer's current location predictions to the CalData X/Y array
+		ValDataX.push(window.dataX);
+		ValDataY.push(window.dataY);
+
 	}
 
 	function showDegrees(){
@@ -161,8 +193,23 @@ function runScript() {
     	//loop through locations
     	for(var i=0; i< 5; i++) {
 	        drawCirc(defCoordsX[i], defCoordsY[i], 0.015)
-
+	   		 drawScanPath(ValLastX[i], ValLastY[i], 'red')
+	   		 drawScanPath(CalLastX[i], CalLastY[i], 'green')
+	   	}
+	    //function for drawing paths from coordinates
+	    function drawScanPath(x, y, colour){
+	    	ctx.beginPath();
+	    	ctx.strokeStyle = colour;
+	    	//start drawing at first coordinate 
+	    	ctx.moveTo(x[0], y[0]);
+	    	//loop through remaining coordinates and drawline 
+	    	for(var ii=1; ii < x.length; ii++){
+	    		ctx.lineTo(x[ii], y[ii]);
+	    	}
+	    	ctx.stroke();
 	    }
+
+	    
 	}
 
 	//This shows the image 
@@ -187,7 +234,6 @@ flagInstructions == true
 
 	// animation loop - calls the different functions which in turn draw on to our canvas 
 	function animate(){
-	console.log('animating')
 
 		 if(flagEndOfGame == true){
 		   showEndOfGame();
@@ -213,8 +259,6 @@ flagInstructions == true
 
 	//This function takes logic flags and alters them to track the stages in the game 
 	function router(){
-		console.log('router')
-		console.log(flagCalibrate)
 		//if instructions are showing and router is activated by a click, flag that animation should display validation screen
 		if(flagInstructions == true) {
 			flagInstructions = false;
@@ -222,19 +266,30 @@ flagInstructions == true
 
 
 		//if instructions were not showing, and calibration points are less than 5, increase the point count 	
-		} else if (flagCalibrate == true && calCnt < 4) {
+		} else if (flagCalibrate == true && calCnt <= 4) {
+			//take last ten predictions and keep 
+			CalLastY[calIndex[calCnt]] = CalDataY.slice(-10)
+			CalLastX[calIndex[calCnt]] = CalDataX.slice(-10)
 			calCnt = calCnt + 1; 
-			console.log(calCnt)
+
 		//if points were more than 5 flag validation stage 
 		} else if (flagCalibrate == true){
+			console.log(CalLastY)
+			console.log(CalLastX)
 			flagCalibrate = false;
 			flagValidate = true;
 		//if validation is not complete, increase count 
-		} else if (flagValidate == true && valCnt < 4) {
+		} else if (flagValidate == true && valCnt <= 4) {
+			//take last 10 item predictions
+			ValLastY[calIndex[valCnt]] = ValDataY.slice(-10)
+			ValLastX[calIndex[valCnt]] = ValDataX.slice(-10)
 			valCnt = valCnt + 1;
+
 		//if validation is complete, flag degrees deviation screen
 		} else if (flagValidate == true) {
+			console.log(ValLastY)
 			flagValidate = false;
+			//calculate x and y coords to plot 
 			flagDegrees = true; 
 		// if degrees is showing flag the first trial 
 		} else if (flagDegrees == true) {
