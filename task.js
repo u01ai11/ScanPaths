@@ -3,7 +3,7 @@ var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
 
 //This sets the size of our canvas to the size of the browser window 
-ctx.canvas.width  = window.innerWidth;
+ctx.canvas.width  = window.innerWidth - 320;
 ctx.canvas.height = window.innerHeight;
 
 //declare all of the logic variables:
@@ -83,11 +83,11 @@ function runScript() {
     	ctx.fillStyle = 'grey';
     	ctx.fillRect(0, 0, canvas.width, canvas.height);
    	 	ctx.fillStyle = 'white';
-	    ctx.font = 0.04*canvas.height +'pt Arial';
+	    ctx.font = 0.03*canvas.height +'pt Arial';
 	    ctx.textAlign="center";
 	    ctx.fillStyle ='white';
 	    ctx.fillText("Welcome to the Scan Path demo",0.5*canvas.width, 0.2*canvas.height);
-	    ctx.font = 0.03*canvas.height +'pt Arial';
+	    ctx.font = 0.02*canvas.height +'pt Arial';
 	    ctx.fillText("First you will complete a calibration task, so the browser knows where you are looking.",0.5*canvas.width, 0.4*canvas.height);
 	    ctx.fillText("Then you can view some pictures and look for the target, when you find the target click it",0.5*canvas.width, 0.5*canvas.height);
 	    ctx.fillText("You can then view a rendering of where you looked on the image",0.5*canvas.width, 0.6*canvas.height);
@@ -97,13 +97,15 @@ function runScript() {
 
 	//This shows the calibration points to get WebGazer accurate 
 	function showCalibration(){
-		ctx.font = 0.04*canvas.height +'pt Arial';
-	    ctx.textAlign="center";
-	    ctx.fillStyle ='white';
-	    ctx.fillText("Calibration",0.5*canvas.width, 0.2*canvas.height);
-
 		ctx.fillStyle = 'grey';
     	ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+		ctx.font = 0.04*canvas.height +'pt Arial';
+	    ctx.textAlign="center";
+	    ctx.fillStyle ='white'
+	    ctx.globalAlpha =0.2;
+	    ctx.fillText("Calibration",0.5*canvas.width, 0.1*canvas.height);
+	    ctx.globalAlpha =1;
 	    //Get the current square location
 	    locx = calx[calCnt];
 	    locy = caly[calCnt];
@@ -121,6 +123,13 @@ function runScript() {
 	function showValidation(){
 		ctx.fillStyle = 'grey';
     	ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+		ctx.font = 0.04*canvas.height +'pt Arial';
+	    ctx.textAlign="center";
+	    ctx.fillStyle ='white'
+	    ctx.globalAlpha =0.2;
+	    ctx.fillText("Validation",0.5*canvas.width, 0.1*canvas.height);
+	    ctx.globalAlpha =1;
 	    //Get the current target location
 	    locx = valx[valCnt];
 	    locy = valy[valCnt];
