@@ -128,6 +128,7 @@ function runScript() {
 	    ctx.fillStyle ='white'
 	    ctx.globalAlpha =0.2;
 	    ctx.fillText("Calibration",0.5*canvas.width, 0.1*canvas.height);
+	    ctx.fillText("Click on Dots",0.5*canvas.width, 0.2*canvas.height);
 	    ctx.globalAlpha =1;
 	    //Get the current square location
 	    locx = calx[calCnt];
@@ -140,6 +141,14 @@ function runScript() {
 		ctx.stroke();
 		ctx.fillStyle = 'white';
 		ctx.fill();
+
+		if(calCnt == 5){
+			ctx.font = 0.04*canvas.height +'pt Arial';
+			ctx.textAlign="center";
+	    	ctx.fillStyle ='white'
+	    	ctx.fillText("Calibration complete, click to continue",0.5*canvas.width, 0.5*canvas.height);
+
+		}
 
 		//This adds WebGazer's current location predictions to the CalData X/Y array
 		
@@ -157,6 +166,7 @@ function runScript() {
 	    ctx.fillStyle ='white'
 	    ctx.globalAlpha =0.2;
 	    ctx.fillText("Validation",0.5*canvas.width, 0.1*canvas.height);
+	    ctx.fillText("Press any Key when looking at dot",0.5*canvas.width, 0.2*canvas.height);
 	    ctx.globalAlpha =1;
 	    //Get the current target location
 	    locx = valx[valCnt];
@@ -174,11 +184,32 @@ function runScript() {
 		ValDataX.push(window.dataX);
 		ValDataY.push(window.dataY);
 
+		if(valCnt == 5){
+			ctx.font = 0.04*canvas.height +'pt Arial';
+			ctx.textAlign="center";
+	    	ctx.fillStyle ='white'
+	    	ctx.fillText("Validation complete, click to view comparison",0.5*canvas.width, 0.5*canvas.height);
+
+		}
+
 	}
 
 	function showDegrees(){
 		ctx.fillStyle = 'grey';
     	ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+		ctx.globalAlpha = 0.6;
+	    ctx.font = 0.04*canvas.height +'pt Arial';
+	    ctx.textAlign="center";
+	    ctx.fillStyle ='green'
+	    ctx.fillText("Calibration Points",0.5*canvas.width, 0.05*canvas.height);
+
+		ctx.font = 0.04*canvas.height +'pt Arial';
+	    ctx.textAlign="center";
+	    ctx.fillStyle ='red'
+	    ctx.fillText("Validation Points",0.5*canvas.width, 0.1*canvas.height);
+	    ctx.globalAlpha = 1.0;
+
 
     	//draw all targets - using function
     	//define function
@@ -190,12 +221,7 @@ function runScript() {
 			ctx.fillStyle = 'white';
 			ctx.fill();
     	}
-    	//loop through locations
-    	for(var i=0; i< 5; i++) {
-	        drawCirc(defCoordsX[i], defCoordsY[i], 0.015)
-	   		 drawScanPath(ValLastX[i], ValLastY[i], 'red')
-	   		 drawScanPath(CalLastX[i], CalLastY[i], 'green')
-	   	}
+
 	    //function for drawing paths from coordinates
 	    function drawScanPath(x, y, colour){
 	    	ctx.beginPath();
@@ -208,6 +234,13 @@ function runScript() {
 	    	}
 	    	ctx.stroke();
 	    }
+
+	    //loop through locations
+    	for(var i=0; i< 5; i++) {
+	        drawCirc(defCoordsX[i], defCoordsY[i], 0.015)
+	   		 drawScanPath(ValLastX[i], ValLastY[i], 'red')
+	   		 drawScanPath(CalLastX[i], CalLastY[i], 'green')
+	   	}
 
 	    
 	}
